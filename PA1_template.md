@@ -1,10 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: Lucas Rodrigues Amaral
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Lucas Rodrigues Amaral  
 
 ## Introduction
 It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the "quantified self" movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks.  
@@ -40,21 +35,43 @@ Fork/clone the GitHub repository created for this assignment. You will submit th
 NOTE: The GitHub repository also contains the dataset for the assignment so you do not have to download the data separately.
 
 ## Libraries:
-```{r}
+
+```r
 library(sqldf)
+```
+
+```
+## Loading required package: gsubfn
+## Loading required package: proto
+## Loading required package: RSQLite
+## Loading required package: DBI
+```
+
+```r
 library(tcltk)
 library(ggplot2)
 library(lattice)
 library(gridExtra)
 ```
 
+```
+## Loading required package: grid
+```
+
 ## Loading and preprocessing the data
 
 1. Load the data (i.e. read.csv())
-```{r}
+
+```r
 #  Set aspects of the locale for the R process
 Sys.setlocale("LC_TIME","English") 
+```
 
+```
+## [1] "English_United States.1252"
+```
+
+```r
 # Set the working directory
 setwd("C:\\R\\courseraworkspace\\repdata\\RepData_PeerAssessment1")
 
@@ -75,10 +92,46 @@ dataFileName    <- "activity.csv"
 dsActivity      <- read.csv(dataFileName, na.strings = "NA", colClasses=c("integer", "Date", "integer") )
 
 str(dsActivity)
+```
 
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
+
+```r
 head(dsActivity, 10)
+```
 
+```
+##    steps       date interval
+## 1     NA 2012-10-01        0
+## 2     NA 2012-10-01        5
+## 3     NA 2012-10-01       10
+## 4     NA 2012-10-01       15
+## 5     NA 2012-10-01       20
+## 6     NA 2012-10-01       25
+## 7     NA 2012-10-01       30
+## 8     NA 2012-10-01       35
+## 9     NA 2012-10-01       40
+## 10    NA 2012-10-01       45
+```
+
+```r
 summary(dsActivity)
+```
+
+```
+##      steps             date               interval     
+##  Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
+##  Median :  0.00   Median :2012-10-31   Median :1177.5  
+##  Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
+##  3rd Qu.: 12.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
+##  Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0  
+##  NA's   :2304
 ```
 
 2. Process/transform the data (if necessary) into a format suitable for your analysis. 
@@ -88,7 +141,8 @@ summary(dsActivity)
 For this part of the assignment, you can ignore the missing values in the dataset.
 
 1. Make a histogram of the total number of steps taken each day:
-```{r}
+
+```r
 # SQL statement that selects the sum and average of steps grouped by date:
 st <- " select          date
                         , sum(steps) as stepsSum 
@@ -102,7 +156,19 @@ dsActivityDay$stepsSum <- as.integer(dsActivityDay$stepsSum)
 dsActivityDay$stepsAvg <- as.numeric(dsActivityDay$stepsAvg)
 
 head(dsActivityDay)
+```
 
+```
+##         date stepsSum stepsAvg
+## 1 2012-10-01       NA       NA
+## 2 2012-10-02      126  0.43750
+## 3 2012-10-03    11352 39.41667
+## 4 2012-10-04    12116 42.06944
+## 5 2012-10-05    13294 46.15972
+## 6 2012-10-06    15420 53.54167
+```
+
+```r
 # Mean of total number of steps taken per day
 stepMean <- mean(dsActivityDay$stepsSum, na.rm=TRUE)
 
@@ -120,23 +186,36 @@ hist(dsActivityDay$stepsSum, col="yellow",
 abline(v=stepMean, col="red", lwd=3)
 abline(v=stepMedian, col="blue", lwd=3, lty=2)
 legend(x="topright", legend=c("mean","median"), col=c("red","blue"), bty="n", lwd=3)
-
 ```
+
+![](figures/unnamed-chunk-3-1.png) 
 
 
 2. Calculate and report the mean and median total number of steps taken per day.
-```{r}
+
+```r
 # Mean of total number of steps taken per day
 mean(dsActivityDay$stepsSum, na.rm=TRUE)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 # Median of total number of steps taken per day
 median(dsActivityDay$stepsSum, na.rm=TRUE)
+```
+
+```
+## [1] 10765
 ```
 
 
 ## What is the average daily activity pattern?
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis):
-```{r}
+
+```r
 # SQL statement that selects the sum and average of steps grouped by interval:
 st <- " select          interval
                         , sum(steps) as stepsSum 
@@ -147,7 +226,19 @@ st <- " select          interval
 dsActivityInterval <- sqldf(st, drv="SQLite")
 
 head(dsActivityInterval)
+```
 
+```
+##   interval stepsSum  stepsAvg
+## 1        0       91 1.7169811
+## 2        5       18 0.3396226
+## 3       10        7 0.1320755
+## 4       15        8 0.1509434
+## 5       20        4 0.0754717
+## 6       25      111 2.0943396
+```
+
+```r
 # Plot the time series
 par(mfrow = c(1, 1))
 plot(dsActivityInterval$interval, dsActivityInterval$stepsAvg, type='l', col="blue", 
@@ -156,9 +247,12 @@ plot(dsActivityInterval$interval, dsActivityInterval$stepsAvg, type='l', col="bl
      ylab="Average number of steps")
 ```
 
+![](figures/unnamed-chunk-5-1.png) 
+
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 # SQL statement that selects the sum and average of steps grouped by interval ordered by stepsSum descending
 st <- "select           * 
         from            dsActivityInterval 
@@ -171,11 +265,17 @@ dsMax <- sqldf(st, drv="SQLite")[1,]
 dsMax
 ```
 
+```
+##   interval stepsSum stepsAvg
+## 1      835    10927 206.1698
+```
+
 ## Imputing missing values
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs):
-```{r}
+
+```r
 # SQL statement that selects the total number of missing values in the dataset:
 st <- "select           count(1) as countNA 
         from            dsActivity 
@@ -187,7 +287,11 @@ dsNA <- sqldf(st, drv="SQLite")
 
 # Total number of missing values:
 dsNA
+```
 
+```
+##   countNA
+## 1    2304
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -197,7 +301,8 @@ The missing values are replacled by interval MEAN.
 </span> 
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in:
-```{r}
+
+```r
 st <-
 "select  a.date
         , a.interval
@@ -212,13 +317,31 @@ where   ai.interval = a.interval"
 dsActivityNA <- sqldf(st, drv="SQLite")
 
 head(dsActivityNA)
+```
 
+```
+##         date interval steps
+## 1 2012-10-01        0     1
+## 2 2012-10-08        0     1
+## 3 2012-11-01        0     1
+## 4 2012-11-04        0     1
+## 5 2012-11-09        0     1
+## 6 2012-11-10        0     1
+```
+
+```r
 # Verifies if exists any missing value
 sqldf("select count(1) as countNA from dsActivityNA where steps is null", drv="SQLite")
 ```
 
+```
+##   countNA
+## 1       0
+```
+
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
-```{r}
+
+```r
 # SQL statement that selects the sum and average of steps grouped by date:
 st <- " select          date
                         , sum(steps) as stepsSum 
@@ -229,8 +352,19 @@ st <- " select          date
 dsActivityNADay <- sqldf(st, drv="SQLite")
 
 head(dsActivityNADay)
+```
 
+```
+##         date stepsSum stepsAvg
+## 1 2012-10-01    10641 36.94792
+## 2 2012-10-02      126  0.43750
+## 3 2012-10-03    11352 39.41667
+## 4 2012-10-04    12116 42.06944
+## 5 2012-10-05    13294 46.15972
+## 6 2012-10-06    15420 53.54167
+```
 
+```r
 # Mean of total number of steps taken per day (missing values replaced by interval MEAN)
 stepMean2 <- mean(dsActivityNADay$stepsSum, na.rm=TRUE)
 
@@ -249,13 +383,26 @@ hist(dsActivityNADay$stepsSum, col="green",
 abline(v=stepMean2, col="red", lwd=3)
 abline(v=stepMedian2, col="blue", lwd=3, lty=2)
 legend(x="topright", legend=c("mean","median"), col=c("red","blue"), bty="n", lwd=3)
+```
 
+![](figures/unnamed-chunk-9-1.png) 
 
+```r
 # Mean of total number of steps taken per day (missing values replaced by interval MEAN)
 stepMean2
+```
 
+```
+## [1] 10749.77
+```
+
+```r
 # Median of total number of steps taken per day (missing values replaced by interval MEAN)
 stepMedian2
+```
+
+```
+## [1] 10641
 ```
 
 Do these values differ from the estimates from the first part of the assignment?  
@@ -264,7 +411,8 @@ The values did not differ significantly from the estimates from the first part o
 </span> 
 
 
-```{r}
+
+```r
 par(mfrow = c(1, 2))
 # Plot the histogram (data with missing values)
 hist(dsActivityDay$stepsSum, col="yellow", 
@@ -287,6 +435,8 @@ abline(v=stepMedian2, col="blue", lwd=3, lty=2)
 legend(x="topright", legend=c("mean","median"), col=c("red","blue"), bty="n", lwd=3)
 ```
 
+![](figures/unnamed-chunk-10-1.png) 
+
 
 What is the impact of imputing missing data on the estimates of the total daily number of steps?  
 
@@ -295,7 +445,8 @@ Filling in missing data with interval MEAN let the metrics almost the same. The 
 </span> 
 
 
-```{r}
+
+```r
 # Create a data frame to store the mean and median calculated with missing data and filled data
 dsMeanMedian <- as.data.frame(rbind(
         c("Yes"
@@ -315,7 +466,15 @@ dsMeanMedian$medianDay          <- as.numeric(dsMeanMedian$medianDay)
 
 # Show the mean and median with missing and filled data
 dsMeanMedian
+```
 
+```
+##   missingValues  meanDay medianDay
+## 1           Yes 10766.19     10765
+## 2            No 10749.77     10641
+```
+
+```r
 # Plot the mean and median with missing and filled data
 plot1 <- qplot(x= missingValues
       , y       = meanDay
@@ -340,15 +499,17 @@ plot2 <- qplot(x= missingValues
       , fill    = missingValues)
 
 grid.arrange(plot1, plot2, ncol=2)
-
 ```
+
+![](figures/unnamed-chunk-11-1.png) 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
 
 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
-```{r}
+
+```r
 dsActivityNA$weekday                 <- c("weekday")
 
 dsActivityNA$weekday                 <- as.character(weekdays(as.Date(dsActivityNA$date)))
@@ -364,7 +525,8 @@ dsActivityNA$weekday                 <- as.factor(dsActivityNA$weekday)
 
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was creating using simulated data.
 
-```{r}
+
+```r
 # SQL statement that selects the sum and average of steps grouped by interval 
 # Missing values were replaced by INTERVAL MEAN
 st <- " select          weekday
@@ -378,7 +540,19 @@ st <- " select          weekday
 dsActivityNAInterval <- sqldf(st, drv="SQLite")
 
 head(dsActivityNAInterval)
+```
 
+```
+##   weekday interval stepsSum   stepsAvg
+## 1 Weekday        0       97 2.15555556
+## 2 Weekday        5       18 0.40000000
+## 3 Weekday       10        7 0.15555556
+## 4 Weekday       15        8 0.17777778
+## 5 Weekday       20        4 0.08888889
+## 6 Weekday       25       71 1.57777778
+```
+
+```r
 par(mfrow = c(1, 1))
 
 xyplot(stepsAvg ~ interval | weekday
@@ -386,7 +560,8 @@ xyplot(stepsAvg ~ interval | weekday
         , layout = c(1, 2)
         , type = "l", 
         , ylab = "Average number of steps")
-
 ```
+
+![](figures/unnamed-chunk-13-1.png) 
 
 
