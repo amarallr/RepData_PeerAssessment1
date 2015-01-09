@@ -130,10 +130,10 @@ legend(x="topright", legend=c("mean","median"), col=c("red","blue"), bty="n", lw
 2. Calculate and report the mean and median total number of steps taken per day.
 ```{r}
 # Mean of total number of steps taken per day
-mean(dsActivityDay$stepsSum, na.rm=TRUE)
+stepMean
 
 # Median of total number of steps taken per day
-median(dsActivityDay$stepsSum, na.rm=TRUE)
+stepMedian
 ```
 
 
@@ -302,19 +302,17 @@ Filling in missing data with interval MEAN let the metrics almost the same. The 
 # Create a data frame to store the mean and median calculated with missing data and filled data
 dsMeanMedian <- as.data.frame(rbind(
         c("Yes"
-            ,round(mean(dsActivityDay$stepsSum, na.rm=TRUE),2)
-            ,median(dsActivityDay$stepsSum, na.rm=TRUE))
+            ,round(stepMean,2)
+            ,stepMedian)
         
         , 
         
         c("No"
-            ,round(mean(dsActivityNADay$stepsSum, na.rm=TRUE),2)
-            ,median(dsActivityNADay$stepsSum, na.rm=TRUE))), stringsAsFactors=FALSE)
+            ,round(stepMean2,2)
+            ,stepMedian2)))
 
 names(dsMeanMedian)             <- c("missingValues", "meanDay", "medianDay")
 dsMeanMedian$missingValues      <- as.factor(dsMeanMedian$missingValues)
-dsMeanMedian$meanDay            <- as.numeric(dsMeanMedian$meanDay)
-dsMeanMedian$medianDay          <- as.numeric(dsMeanMedian$medianDay)
 
 # Show the mean and median with missing and filled data
 dsMeanMedian
