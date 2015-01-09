@@ -1,9 +1,12 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-author: Lucas Rodrigues Amaral
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+author: "Lucas Rodrigues Amaral"
+output:
   html_document:
-    keep_md: true
+    fig_caption: yes
+    keep_md: yes
+    toc: yes
+  pdf_document: default
 ---
 
 ## Introduction
